@@ -19,12 +19,6 @@ namespace kaiser::csp::solver
 		std::vector<int> solutions_;
 		size_t n_solutions_;
 		size_t offset_;
-		/*
-		std::vector<T> solutions_;
-		std::function<bool (const std::vector<T>&)> constraints_;
-		size_t offset_;
-		*/
-
 
 	public:
 		virtual void solve() = 0;

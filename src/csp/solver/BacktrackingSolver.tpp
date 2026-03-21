@@ -40,16 +40,6 @@ namespace kaiser::csp::solver
 					stack.push(data);
 				data.pop_back();
 			}
-
-			// for (const auto& d : problem_.domains)
-		    // {
-		    // 	   data.emplace_back(d);
-
-		    //     if (problem_.constraints->compute(data))
-		    //         stack.push(data);
-
-		    //     data.pop_back();
-		    // }
 		}
 	}
 }
