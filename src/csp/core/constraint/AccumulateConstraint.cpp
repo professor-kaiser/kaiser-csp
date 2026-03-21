@@ -26,12 +26,12 @@ namespace kaiser::csp::core::constraint
         {
             if (idx >= (int)transformed_data.size()) continue;
 
-            int sum = std::accumulate(
+            int acc = std::accumulate(
                 rel.begin(), rel.end(), init_,
                 [&](int acc, int i) { return accumulator_(acc, transformed_data[i]); }
             );
 
-            if (sum != transformed_data[idx])
+            if (acc != transformed_data[idx])
                 return false;
         }
 
