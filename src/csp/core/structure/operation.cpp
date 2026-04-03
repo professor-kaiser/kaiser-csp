@@ -23,14 +23,14 @@ namespace kaiser::csp::core::structure
         return left->accept(LeftDispatch{right});
     }
     
-    IntervalPtr operator*(IntervalPtr interval, double k)
-    {
-        return (*interval) * k;
-    }
+    // IntervalPtr operator*(IntervalPtr interval, double k)
+    // {
+    //     return (*interval) * k;
+    // }
 
-    IntervalPtr operator*=(IntervalPtr interval, double k)
-    {
-        (*interval) *= k;
-        return interval;
-    }
+    // IntervalPtr operator*=(IntervalPtr interval, double k)
+    // {
+    //     (*interval) *= k;
+    //     return interval;
+    // }
 } // namespace kaiser::csp::core::structure

@@ -20,18 +20,26 @@ using namespace kaiser::csp::core::structure;
 
 // g++ -std=c++20 expression.test.cpp ../../src/csp/core/structure/*.cpp ../../src/csp/core/expressions/*.cpp -o expression
 
+auto& reg = ExpressionRegistry::instance();
+
 TEST_CASE("[LinearExpression]")
 {
     auto domains = make_union({});
-    auto var = std::make_shared<LinearExpression>(domains, 0);
+    auto var = make_expression<LinearExpression>(domains, 0);
 
-    int result = eval(var->flatten(), std::array {1, 2, 3});
+    auto& expr = reg.at(var->id);
+    
+    int result0 = eval(var->flatten(), std::array {10});
+    int result1 = eval(expr->flatten(), std::array {10});
+
+    CHECK(result0 == 10);
+    CHECK(result1 == 10);
 }
 
 TEST_CASE("[ScaleExpression] : operator *")
 {
     auto domains = make_union({});
-    auto a = std::make_shared<LinearExpression>(domains, 0);
+    auto a = make_expression<LinearExpression>(domains, 0);
 
     auto expr0 = a * 2;
     auto expr1 = 2 * a;
@@ -43,11 +51,30 @@ TEST_CASE("[ScaleExpression] : operator *")
     CHECK(result1 == 180);
 }
 
+TEST_CASE("[ScaleExpression] : operator * & registry")
+{
+    auto domains = make_continue(0, 2);
+    auto a = make_expression<LinearExpression>(domains, 0);
+
+    auto expr0 = a * 2;
+    auto expr1 = reg.at(expr0->id);
+
+    expr0->domains = std::move(make_continue(0, 3));
+
+    int result0 = eval(expr0->flatten(), std::array {102});
+    int result1 = eval(expr1->flatten(), std::array {90});
+
+    CHECK(result0 == 204);
+    CHECK(result1 == 180);
+    CHECK(expr0->domains->flatten() == std::set {0, 1, 2, 3});
+    CHECK(expr1->domains->flatten() == std::set {0, 1, 2, 3});
+}
+
 TEST_CASE("[SumExpression] : operator +")
 {
     auto domains = make_union({});
-    auto a = std::make_shared<LinearExpression>(domains, 0);
-    auto b = std::make_shared<LinearExpression>(domains, 1);
+    auto a = make_expression<LinearExpression>(domains, 0);
+    auto b = make_expression<LinearExpression>(domains, 1);
 
     auto expr = a + b;
     auto sum0 = a + 10;
@@ -66,7 +93,7 @@ TEST_CASE("[Domains propagation]")
 {
     auto var = [](IntervalPtr domains, int idx, int coeff = 1)
     {
-        return std::make_shared<LinearExpression>(domains, idx, coeff);
+        return make_expression<LinearExpression>(domains, idx, coeff);
     };
 
     auto X = var(make_continue(-10, 0), 0);
@@ -83,7 +110,7 @@ TEST_CASE("[Test]")
 {
     auto var = [](IntervalPtr domains, int idx, int coeff = 1)
     {
-        return std::make_shared<LinearExpression>(domains, idx, coeff);
+        return make_expression<LinearExpression>(domains, idx, coeff);
     };
 
     auto S = var(make_continue(1, 9), 0);
@@ -95,7 +122,7 @@ TEST_CASE("[Test]")
     auto R = var(make_continue(0, 9), 6);
     auto Y = var(make_continue(0, 9), 7);
 
-    std::vector<std::shared_ptr<ExpressionBase>> variables = {S, E, N, D, M, O, R, Y};
+    std::vector<Expression> variables = {S, E, N, D, M, O, R, Y};
 
     auto SEND  = 1000*S + 100*E + 10*N + D;
     auto MORE  = 1000*M + 100*O + 10*R + E;
@@ -116,12 +143,6 @@ TEST_CASE("[Test]")
     for (size_t i = 0; i < variables.size(); ++i)
     {
         flattened[i] = variables[i]->domains->flatten();
-        std::cout << "variable[" << i << "]: ";
-        for (const auto& d : flattened[i])
-        {
-            std::cout << d << " ";
-        }
-        std::cout << std::endl;
     }
 
     std::function<void(int)> bt = [&](int depth)

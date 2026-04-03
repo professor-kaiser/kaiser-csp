@@ -6,7 +6,8 @@ namespace kaiser::csp::core::expression
     ScaleExpression::ScaleExpression(ExpressionPtr expr, int s)
     : ExpressionBase((*expr->domains) * s),
     expression(std::move(expr)), scalar(s)
-    {}
+    {
+    }
 
     void ScaleExpression::propagate_domains(IntervalPtr interval)
     {

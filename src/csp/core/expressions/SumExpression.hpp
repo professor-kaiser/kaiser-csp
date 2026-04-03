@@ -16,6 +16,7 @@ namespace kaiser::csp::core::expression
         using ExpressionPtr = std::shared_ptr<ExpressionBase>;
 
         using ExpressionBase::domains;
+        using ExpressionBase::id;
         ExpressionPtr left, right;
 
         SumExpression(ExpressionPtr l_expr, ExpressionPtr r_expr)

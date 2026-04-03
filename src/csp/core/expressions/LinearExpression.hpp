@@ -9,6 +9,7 @@ namespace kaiser::csp::core::expression
     struct LinearExpression : public ExpressionBase
     {
         using ExpressionBase::domains;
+        using ExpressionBase::id;
         std::map<int, int> coeffs;
         int constant;
 

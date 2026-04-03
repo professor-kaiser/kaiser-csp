@@ -13,6 +13,7 @@ namespace kaiser::csp::core::expression
         using ExpressionPtr = std::shared_ptr<ExpressionBase>;
 
         using ExpressionBase::domains;
+        using ExpressionBase::id;
         ExpressionPtr expression;
         int scalar;
 

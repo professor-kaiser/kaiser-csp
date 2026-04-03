@@ -17,16 +17,16 @@ namespace kaiser::csp::core::expression
         std::shared_ptr<LHS> l,
         std::shared_ptr<RHS> r)
     {
-        return std::make_shared<SumExpression>(std::move(l), std::move(r));
+        return make_expression<SumExpression>(std::move(l), std::move(r));
     }
 
     template <typename Derived>
     std::shared_ptr<ExpressionBase> operator+(
         const std::shared_ptr<Derived>& expr, int k)
     {
-        return std::make_shared<SumExpression>(
+        return make_expression<SumExpression>(
             expr,
-            std::make_shared<LinearExpression>(
+            make_expression<LinearExpression>(
                 std::make_shared<ContinuousInterval>(k, k),
                 std::map<int, int>{}, 
                 k)
@@ -45,9 +45,9 @@ namespace kaiser::csp::core::expression
         std::shared_ptr<LHS> l,
         std::shared_ptr<RHS> r)
     {
-        return std::make_shared<SumExpression>(
+        return make_expression<SumExpression>(
             std::move(l), 
-            std::make_shared<ScaleExpression>(std::move(r), -1)
+            make_expression<ScaleExpression>(std::move(r), -1)
         );
     }
 
@@ -70,7 +70,7 @@ namespace kaiser::csp::core::expression
     std::shared_ptr<ExpressionBase> operator*(
         const std::shared_ptr<Derived>& expr, int k)
     {
-        return std::make_shared<ScaleExpression>(expr, k);
+        return make_expression<ScaleExpression>(expr, k);
     }
 
     template <typename Derived>
