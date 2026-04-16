@@ -8,9 +8,14 @@ namespace kaiser::csp::core::structure
     : Interval(min, max)
     {}
 
-    IntervalPtr make_continue(int min, int max)
+    IntervalPtr make_continuous(int min, int max)
     {
         return std::make_shared<ContinuousInterval>(min, max);
+    }
+
+    IntervalPtr make_constant(int c)
+    {
+        return make_continuous(c, c);
     }
 
     ContinuousInterval operator+(
@@ -61,5 +66,10 @@ namespace kaiser::csp::core::structure
         std::set<int> flat;
         for (int i = min_; i <= max_; ++i) flat.insert(i);
         return flat;
+    }
+
+    IntervalPtr ContinuousInterval::clone() const
+    {
+        return std::make_shared<ContinuousInterval>(*this);
     }
 } // namespace kaiser::csp::core::structure

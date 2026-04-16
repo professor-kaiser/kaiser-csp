@@ -15,6 +15,9 @@ namespace kaiser::csp::core::expression
 
         LinearExpression(IntervalPtr interval, std::map<int, int> c = {}, int k = 0);
         LinearExpression(IntervalPtr interval, int idx, int coeff = 1);
+        LinearExpression(std::string context, IntervalPtr interval, std::map<int, int> c = {}, int k = 0);
+        LinearExpression(std::string context, IntervalPtr interval, int idx, int coeff = 1);
+
         void propagate_domains(IntervalPtr interval) override;
         Flat flatten() const override;
     };

@@ -30,6 +30,7 @@ namespace kaiser::csp::core::structure
         virtual IntervalPtr operator*(double k) = 0;
         virtual Interval& operator*=(double k) = 0;
         virtual std::set<int> flatten() const = 0;
+        virtual IntervalPtr clone() const = 0;
         virtual ~Interval() = default;
     };
 } // namespace kaiser::csp::core::structure

@@ -1,41 +1,30 @@
-#include "EqualConstraint.hpp"
+#include "NotEqualConstraint.hpp"
 #include "../structure/operation.hpp"
 #include "../expressions/operation.hpp"
 #include <iostream>
 
 namespace kaiser::csp::core::constraint
 {
-    EqualConstraint::EqualConstraint(std::string ctx, int l, int r)
+    NotEqualConstraint::NotEqualConstraint(std::string ctx, int l, int r)
     : ConstraintBase(std::move(ctx), l, r)
     {
-        auto& constraint_reg = ConstraintRegistry::instance();
         auto& revise_reg = ReviseRegistry::instance();
-        
-        ContextGuard constraint_guard(constraint_reg, context);
         ContextGuard revise_guard(revise_reg, context);
-
-        auto constraint_fn = [] (int l_value, int r_value) 
-        {
-            return l_value == r_value;
-        };
 
         auto revise_fn = [] (IntervalPtr& x, const IntervalPtr& y)
         {
-            auto old = x->flatten();
-            auto inter = intersect(x, y);
-            x = std::move(inter);
+            const int y_dist = y->max() - y->min();
+            if (y_dist != 0) return false;
 
-            return x->flatten() != old;
+            x -= y->max();
+            return true;
         };
-
-        constraint_reg.register_type(make_key(l, r), constraint_fn);
-        constraint_reg.register_type(make_key(r, l), std::move(constraint_fn));
 
         revise_reg.register_type(make_key(l, r), revise_fn);
         revise_reg.register_type(make_key(r, l), std::move(revise_fn));
     }
 
-    void EqualConstraint::prepare()
+    void NotEqualConstraint::prepare()
     {
         auto& flat_reg = FlattenRegistry::instance();
         ContextGuard guard(flat_reg, context);
@@ -45,8 +34,8 @@ namespace kaiser::csp::core::constraint
         cached_diff = diff(left_flat, right_flat);
     }
 
-    bool EqualConstraint::compare(std::span<const int> data)
+    bool NotEqualConstraint::compare(std::span<const int> data)
     {
-        return eval(cached_diff, data) == 0;
+        return eval(cached_diff, data) != 0;
     }
 }

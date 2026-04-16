@@ -11,6 +11,8 @@
 
 namespace kaiser::csp::core::expression
 {
+    // Must same context
+
     /// SUM
     template <typename LHS, typename RHS>
     auto operator+(
@@ -27,6 +29,7 @@ namespace kaiser::csp::core::expression
         return make_expression<SumExpression>(
             expr,
             make_expression<LinearExpression>(
+                expr->get_context(),
                 std::make_shared<ContinuousInterval>(k, k),
                 std::map<int, int>{}, 
                 k)

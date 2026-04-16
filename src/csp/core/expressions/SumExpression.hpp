@@ -17,25 +17,29 @@ namespace kaiser::csp::core::expression
 
         using ExpressionBase::domains;
         using ExpressionBase::id;
+        using ExpressionBase::context_;
         ExpressionPtr left, right;
 
         SumExpression(ExpressionPtr l_expr, ExpressionPtr r_expr)
-        : ExpressionBase(nullptr),
+        : ExpressionBase(std::move(l_expr->get_context()), nullptr),
           left(std::move(l_expr)), right(std::move(r_expr))
         {
             domains = left->domains + right->domains;
-            // for (const auto& l_bound : left->domains)
-            // {
-            //     for (const auto& r_bound : right->domains)
-            //     {
-            //         domains.push_back(l_bound + r_bound);
-            //     }
-            // }
         }
 
-        void propagate_domains(IntervalPtr intervals) override
+        SumExpression(std::string context, ExpressionPtr l_expr, ExpressionPtr r_expr)
+        : ExpressionBase(std::move(context), nullptr),
+          left(std::move(l_expr)), right(std::move(r_expr))
         {
-            domains = std::move(intervals);
+            domains = left->domains + right->domains;
+        }
+
+        void propagate_domains(IntervalPtr interval) override
+        {
+            //domains = std::move(intervals);
+            *domains = *intersect(domains, interval);
+            update_domains();
+
             auto parent_domains = domains->flatten();
             auto left_domains = left->domains->flatten();
             auto right_domains = right->domains->flatten();
@@ -50,11 +54,15 @@ namespace kaiser::csp::core::expression
             const int right_min = *std::begin(right_domains);
             const int right_max = *std::rbegin(right_domains);
 
-            auto left_interval = ContinuousInterval(parent_min - right_max, parent_max - right_min)
-                .intersect(ContinuousInterval(left_min, left_max));
+            auto left_interval = intersect(
+                ContinuousInterval(parent_min - right_max, parent_max - right_min),
+                ContinuousInterval(left_min, left_max)
+            );
                 
-            auto right_interval = ContinuousInterval(parent_min - left_max, parent_max - left_min)
-                .intersect(ContinuousInterval(right_min, right_max));
+            auto right_interval = intersect(
+                ContinuousInterval(parent_min - left_max, parent_max - left_min),
+                ContinuousInterval(right_min, right_max)
+            );
 
             std::vector<ContinuousInterval> prop_interval;
 

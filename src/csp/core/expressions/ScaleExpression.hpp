@@ -18,6 +18,7 @@ namespace kaiser::csp::core::expression
         int scalar;
 
         ScaleExpression(ExpressionPtr expr, int s);
+        ScaleExpression(std::string context, ExpressionPtr expr, int s);
         void propagate_domains(IntervalPtr interval) override;
         Flat flatten() const override;
     };

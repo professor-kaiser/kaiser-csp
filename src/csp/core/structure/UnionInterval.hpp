@@ -22,8 +22,10 @@ namespace kaiser::csp::core::structure
         IntervalPtr operator*(double k) override;
         Interval& operator*=(double k) override;
         std::set<int> flatten() const override;
-
+        UnionInterval intersect(const UnionInterval& other);
+        std::vector<ContinuousInterval>& get_continuous_intervals();
         std::vector<ContinuousInterval> get_continuous_intervals() const;
+        IntervalPtr clone() const override;
     };
 
     IntervalPtr make_union(std::vector<ContinuousInterval>);

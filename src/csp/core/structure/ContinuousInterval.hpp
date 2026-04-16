@@ -15,15 +15,19 @@ namespace kaiser::csp::core::structure
         using Interval::max_;
 
     public:
+        ContinuousInterval(const ContinuousInterval&) = default;
         ContinuousInterval(int min, int max);
         std::optional<ContinuousInterval> intersect(const ContinuousInterval& other);
         IntervalPtr accept(const IntervalAddVisitor&) const override;
         IntervalPtr operator*(double k) override;
         Interval& operator*=(double k) override;
         std::set<int> flatten() const override;
+        IntervalPtr clone() const override;
     };
 
-    IntervalPtr make_continue(int min, int max);
+    IntervalPtr make_continuous(int min, int max);
+    IntervalPtr make_constant(int c);
+    
 
     ContinuousInterval operator+(
         const ContinuousInterval& left, 

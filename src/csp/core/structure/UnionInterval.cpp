@@ -42,6 +42,7 @@ namespace kaiser::csp::core::structure
 
         return UnionInterval(ci);
     }
+    
 
     IntervalPtr UnionInterval::accept(const IntervalAddVisitor& visitor) const
     {
@@ -78,8 +79,37 @@ namespace kaiser::csp::core::structure
         return flattened;
     }
 
+    std::vector<ContinuousInterval>& UnionInterval::get_continuous_intervals()
+    {
+        return continuous_intervals_;
+    }
+
     std::vector<ContinuousInterval> UnionInterval::get_continuous_intervals() const
     {
         return continuous_intervals_;
+    }
+
+    IntervalPtr UnionInterval::clone() const 
+    {
+        return std::make_shared<UnionInterval>(*this);
+    }
+
+    UnionInterval UnionInterval::intersect(const UnionInterval& other)
+    {
+        UnionInterval result({});
+        auto it_a = continuous_intervals_.begin();
+        auto it_b = other.continuous_intervals_.begin();
+
+        while (it_a != continuous_intervals_.end() && it_b != other.continuous_intervals_.end())
+        {
+            auto inter = it_a->intersect(*it_b);
+            if (inter.has_value())
+                result.continuous_intervals_.push_back(inter.value());
+
+            if (it_a->max() < it_b->max()) ++it_a;
+            else ++it_b;
+        }
+
+        return result;
     }
 } // namespace kaiser::csp::core::structure
